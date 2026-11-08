@@ -10,46 +10,30 @@ class PantryService {
       throw ArgumentError('Item information cannot be empty.');
     }
 
-    if (item.quantity <= 0) {
-      throw ArgumentError('Quantity must be greater than zero.');
+    if (item.quantity <= 0 || !item.quantity.isFinite) {
+      throw ArgumentError('Quantity must be a finite number greater than zero.');
     }
 
-    _validateExpiryDate(item);
-  }
-
-  void _validateExpiryDate(PantryItem item) {
-    if (item.expiryDate == null) return;
-
-    final today = DateTime.now();
-    final expiry = item.expiryDate!;
-
-    final todayDate = DateTime(today.year, today.month, today.day);
-
-    final expiryDay = DateTime(expiry.year, expiry.month, expiry.day);
-
-    if (expiryDay.isBefore(todayDate)) {
-      throw ArgumentError('Expiry date cannot be in the past.');
-    }
   }
 
   void addItem(PantryItem item) {
     _validateItem(item);
 
-    if (getItemById(item.id) != null) {
+    if (_items.any((existing) => existing.id == item.id)) {
       throw StateError('Item with this ID already exists.');
     }
 
-    _items.add(item);
+    _items.add(item.copy());
   }
 
   List<PantryItem> getAllItems() {
-    return List.unmodifiable(_items);
+    return List.unmodifiable(_items.map((item)=>item.copy()));
   }
 
   PantryItem? getItemById(String id) {
     for (final item in _items) {
       if (item.id == id) {
-        return item;
+        return item.copy();
       }
     }
 
@@ -65,7 +49,7 @@ class PantryService {
 
     _validateItem(updatedItem);
 
-    _items[index] = updatedItem;
+    _items[index] = updatedItem.copy();
 
     return true;
   }

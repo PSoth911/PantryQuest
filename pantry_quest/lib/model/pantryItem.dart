@@ -1,4 +1,3 @@
-
 import 'ingredient_category.dart';
 
 class PantryItem {
@@ -16,12 +15,12 @@ class PantryItem {
     required String unit,
     required DateTime? expiryDate,
     required IngredientCategory category,
-  })  : _id = id,
-        _name = name,
-        _quantity = quantity,
-        _unit = unit,
-        _expiryDate = expiryDate,
-        _category = category;
+  }) : _id = _validateId(id),
+       _name = _validateName(name),
+       _quantity = _validateQuantity(quantity),
+       _unit = _validateUnit(unit),
+       _expiryDate = expiryDate,
+       _category = category;
 
   String get id => _id;
   String get name => _name;
@@ -30,25 +29,49 @@ class PantryItem {
   DateTime? get expiryDate => _expiryDate;
   IngredientCategory get category => _category;
 
-  set name(String value) {
-    if (value.trim().isEmpty) {
-      throw ArgumentError('Name cannot be empty.');
+  static String _validateId(String value) {
+    final trimmedValue = value.trim();
+    if (trimmedValue.isEmpty) {
+      throw ArgumentError('ID cannot be empty.');
     }
-    _name = value;
+    return trimmedValue;
+  }
+
+  static String _validateName(String value) {
+    final trimmedValue = value.trim();
+    if (trimmedValue.isEmpty) {
+      throw ArgumentError('Name cannot be empty');
+    }
+    return trimmedValue;
+  }
+
+  static double _validateQuantity(double value) {
+    if (value <= 0 || !value.isFinite) {
+      throw ArgumentError(
+        'Quantity must be a finite number greater than zero.',
+      );
+    }
+    return value;
+  }
+
+  static String _validateUnit(String value) {
+    final trimmedValue = value.trim();
+    if (trimmedValue.isEmpty) {
+      throw ArgumentError('Unit cannot be empty.');
+    }
+    return trimmedValue;
+  }
+
+  set name(String value) {
+    _name = _validateName(value);
   }
 
   set quantity(double value) {
-    if (value <= 0) {
-      throw ArgumentError('Quantity must be greater than zero.');
-    }
-    _quantity = value;
+    _quantity = _validateQuantity(value);
   }
 
   set unit(String value) {
-    if (value.trim().isEmpty) {
-      throw ArgumentError('Unit cannot be empty.');
-    }
-    _unit = value;
+    _unit = _validateUnit(value);
   }
 
   set expiryDate(DateTime? value) {
@@ -81,5 +104,16 @@ class PantryItem {
     final expiryDay = DateTime(expiry.year, expiry.month, expiry.day);
 
     return expiryDay.difference(todayDate).inDays <= 3;
+  }
+
+  PantryItem copy() {
+    return PantryItem(
+      id: id,
+      name: name,
+      quantity: quantity,
+      unit: unit,
+      expiryDate: expiryDate,
+      category: category,
+    );
   }
 }

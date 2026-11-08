@@ -28,21 +28,21 @@ class RecipeService {
   void addRecipe(Recipe recipe) {
     _validateRecipe(recipe);
 
-    if (getRecipeById(recipe.id) != null) {
+    if (_recipes.any((existing)=>existing.id==recipe.id)) {
       throw StateError('Recipe with this ID already exists.');
     }
 
-    _recipes.add(recipe);
+    _recipes.add(recipe.copy());
   }
 
   List<Recipe> getAllRecipes() {
-    return List.unmodifiable(_recipes);
+    return List.unmodifiable(_recipes.map((rec)=>rec.copy()));
   }
 
   Recipe? getRecipeById(String id) {
     for (final recipe in _recipes) {
       if (recipe.id == id) {
-        return recipe;
+        return recipe.copy();
       }
     }
 
@@ -60,7 +60,7 @@ class RecipeService {
 
     _validateRecipe(updatedRecipe);
 
-    _recipes[index] = updatedRecipe;
+    _recipes[index] = updatedRecipe.copy();
 
     return true;
   }
