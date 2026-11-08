@@ -1,5 +1,6 @@
 import 'dart:nativewrappers/_internal/vm/lib/math_patch.dart';
 
+import 'package:pantry_quest/model/ingredient_category.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
@@ -25,20 +26,27 @@ void main() {
 
     test('Should record meal and deduct inventory successfull', () {
       final today = DateTime.now();
-      pantryService.addItem(
-        'Rice',
-        5.0,
-        'kg',
-        today.add(const Duration(days: 10)),
-        'Grains',
+
+      final riceItem = PantryItem(
+        id: uuid.v4(),
+        name: "Rice",
+        quantity: 1.0,
+        unit: "kg",
+        expiryDate: today.add(const Duration(days: 10)),
+        category: IngredientCategory.grains,
       );
-      pantryService.addItem(
-        'Chicken',
-        3.0,
-        'kg',
-        today.add(const Duration(days: 5)),
-        'Meat',
+
+      final chickenItem = PantryItem(
+        id: uuid.v4(),
+        name: "Chicken",
+        quantity: 3.0,
+        unit: "kg",
+        expiryDate: today.add(const Duration(days: 10)),
+        category: IngredientCategory.meat,
       );
+
+      pantryService.addItem(riceItem);
+      pantryService.addItem(chickenItem);
 
       final recipe = Recipe(
         id: uuid.v4(),
@@ -78,12 +86,17 @@ void main() {
 
     test('Invalid: Reject cooking and keep inventory unchange', () {
       final today = DateTime.now();
-      pantryService.addItem(
-        'Rice',
-        1.0,
-        'kg',
-        today.add(const Duration(days: 10), 'Grains'),
+
+      final riceItem = PantryItem(
+        id: uuid.v4(),
+        name: "Rice",
+        quantity: 1.0,
+        unit: "kg",
+        expiryDate: today.add(const Duration(days: 10)),
+        category: IngredientCategory.grains,
       );
+
+      pantryService.addItem(riceItem);
 
       final recipe = Recipe(
         id: uuid.v4(),
@@ -116,13 +129,16 @@ void main() {
 
     test('BOUNDARY: Should successfully cook and exhaust batch when quantity is exactly met', () {
       final today = DateTime.now();
-      pantryService.addItem(
-        'Eggs',
-        2.0,
-        'pcs',
-        today.add(const Duration(days: 3)),
-        'Dairy',
+
+      final eggsItem = PantryItem(
+        id: uuid.v4(),
+        name: 'Eggs',
+        quantity: 2.0,
+        unit: 'pcs',
+        expiryDate: today.add(const Duration(days: 3)),
+        category: IngredientCategory.dairy,
       );
+      pantryService.addItem(eggsItem);
 
       final recipe = Recipe(
         id: uuid.v4(),

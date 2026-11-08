@@ -1,3 +1,4 @@
+import 'package:pantry_quest/model/ingredient_category.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
@@ -23,10 +24,10 @@ void main() {
       return PantryItem(
         id: id ?? uuid.v4(),
         name: name,
-        quantity: quantity,
+        quantity: quantity, 
         unit: unit,
         expiryDate: expiryDate ?? DateTime.now().add(const Duration(days: 10)),
-        category: 'Grains',
+        category: IngredientCategory.grains,
       );
     }
 
