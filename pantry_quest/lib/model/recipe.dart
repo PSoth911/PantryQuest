@@ -23,7 +23,7 @@ class Recipe {
   String get name => _name;
   String? get description => _description;
   String get imagePath => _imagePath;
-  List<RecipeIngredient> get ingredients => List.unmodifiable(_ingredients);
+  List<RecipeIngredient> get ingredients => List.unmodifiable(_ingredients.map((item) => item.copy()));
 
   static String _validateId(String value) {
     final trimmedValue = value.trim();
@@ -69,6 +69,7 @@ class Recipe {
     return Recipe(
       id: id,
       name: name,
+      description: description,
       imagePath: imagePath,
      ingredients: ingredients.map((ingredient) => ingredient.copy()).toList(),
     );

@@ -1,3 +1,6 @@
+import 'package:pantry_quest/model/recipeIngredient.dart';
+import 'package:pantry_quest/service/pantry_service.dart';
+
 import '../model/recipe.dart';
 
 class RecipeService {
@@ -76,4 +79,73 @@ class RecipeService {
 
     return true;
   }
+
+  bool isRecipeAvailable(
+    Recipe recipe,
+    PantryService pantryService,
+  ) {
+    return getMissingIngredients(
+      recipe,
+      pantryService,
+    ).isEmpty;
+  }
+
+  List<RecipeIngredient> getMissingIngredients(
+    Recipe recipe,
+    PantryService pantryService,
+  ) {
+    final requirements = _aggregateIngredients(
+      recipe.ingredients,
+    );
+
+    final missingIngredients = <RecipeIngredient>[];
+
+    for (final ingredient in requirements) {
+      final available = pantryService.getAvailableQuantity(
+        ingredient.ingredientName,
+        ingredient.unit,
+      );
+
+      final missing =
+          ingredient.requiredQuantity - available;
+
+      if (missing > 0.000000001) {
+        missingIngredients.add(
+          RecipeIngredient(
+            ingredientName: ingredient.ingredientName,
+            requiredQuantity: missing,
+            unit: ingredient.unit,
+          ),
+        );
+      }
+    }
+
+    return List.unmodifiable(missingIngredients);
+  }
+
+   List<RecipeIngredient> _aggregateIngredients(
+    List<RecipeIngredient> ingredients,
+  ) {
+    final result = <RecipeIngredient>[];
+
+    for (final ingredient in ingredients) {
+      final index = result.indexWhere(
+        (existing) =>
+            existing.ingredientName.toLowerCase() ==
+                ingredient.ingredientName.toLowerCase() &&
+            existing.unit == ingredient.unit,
+      );
+
+      if (index == -1) {
+        result.add(ingredient.copy());
+      } else {
+        final existing = result[index];
+
+        existing.requiredQuantity += ingredient.requiredQuantity;
+      }
+    }
+
+    return result;
+  }
+
 }
