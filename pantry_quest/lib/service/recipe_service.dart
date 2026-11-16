@@ -31,7 +31,7 @@ class RecipeService {
   void addRecipe(Recipe recipe) {
     _validateRecipe(recipe);
 
-    if (_recipes.any((existing)=>existing.id==recipe.id)) {
+    if (_recipes.any((existing) => existing.id == recipe.id)) {
       throw StateError('Recipe with this ID already exists.');
     }
 
@@ -39,7 +39,7 @@ class RecipeService {
   }
 
   List<Recipe> getAllRecipes() {
-    return List.unmodifiable(_recipes.map((rec)=>rec.copy()));
+    return List.unmodifiable(_recipes.map((rec) => rec.copy()));
   }
 
   Recipe? getRecipeById(String id) {
@@ -80,50 +80,7 @@ class RecipeService {
     return true;
   }
 
-  bool isRecipeAvailable(
-    Recipe recipe,
-    PantryService pantryService,
-  ) {
-    return getMissingIngredients(
-      recipe,
-      pantryService,
-    ).isEmpty;
-  }
-
-  List<RecipeIngredient> getMissingIngredients(
-    Recipe recipe,
-    PantryService pantryService,
-  ) {
-    final requirements = _aggregateIngredients(
-      recipe.ingredients,
-    );
-
-    final missingIngredients = <RecipeIngredient>[];
-
-    for (final ingredient in requirements) {
-      final available = pantryService.getAvailableQuantity(
-        ingredient.ingredientName,
-        ingredient.unit,
-      );
-
-      final missing =
-          ingredient.requiredQuantity - available;
-
-      if (missing > 0.000000001) {
-        missingIngredients.add(
-          RecipeIngredient(
-            ingredientName: ingredient.ingredientName,
-            requiredQuantity: missing,
-            unit: ingredient.unit,
-          ),
-        );
-      }
-    }
-
-    return List.unmodifiable(missingIngredients);
-  }
-
-   List<RecipeIngredient> _aggregateIngredients(
+  List<RecipeIngredient> _aggregateIngredients(
     List<RecipeIngredient> ingredients,
   ) {
     final result = <RecipeIngredient>[];
@@ -139,13 +96,44 @@ class RecipeService {
       if (index == -1) {
         result.add(ingredient.copy());
       } else {
-        final existing = result[index];
-
-        existing.requiredQuantity += ingredient.requiredQuantity;
+        result[index].requiredQuantity += ingredient.requiredQuantity;
       }
     }
 
     return result;
   }
 
+  List<RecipeIngredient> getMissingIngredients(
+    Recipe recipe,
+    PantryService pantryService,
+  ) {
+    final requirements = _aggregateIngredients(recipe.ingredients);
+
+    final missingIngredients = <RecipeIngredient>[];
+
+    for (final ingredient in requirements) {
+      final available = pantryService.getAvailableQuantity(
+        ingredient.ingredientName,
+        ingredient.unit,
+      );
+
+      final missing = ingredient.requiredQuantity - available;
+
+      if (missing > 0) {
+        missingIngredients.add(
+          RecipeIngredient(
+            ingredientName: ingredient.ingredientName,
+            requiredQuantity: missing,
+            unit: ingredient.unit,
+          ),
+        );
+      }
+    }
+
+    return List.unmodifiable(missingIngredients);
+  }
+
+  bool isRecipeAvailable(Recipe recipe, PantryService pantryService) {
+    return getMissingIngredients(recipe, pantryService).isEmpty;
+  }
 }

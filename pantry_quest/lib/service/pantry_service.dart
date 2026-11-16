@@ -112,13 +112,10 @@ class PantryService {
 
     final available = getAvailableQuantity(ingredientName, unit);
 
-    return available + 0.000000001 >= requiredQuantity;
+    return available >= requiredQuantity;
   }
 
   void deductIngredients(List<RecipeIngredient> ingredients) {
-
-  
-
     for (final ingredient in ingredients) {
       if (!hasEnoughIngredient(
         ingredient.ingredientName,
@@ -131,18 +128,18 @@ class PantryService {
       }
     }
 
-   
-
     for (final ingredient in ingredients) {
       double remaining = ingredient.requiredQuantity;
 
-      final matchingItems = _items.where(
-        (item) =>
-            item.name.toLowerCase() ==
-                ingredient.ingredientName.toLowerCase() &&
-            item.unit == ingredient.unit &&
-            !item.isExpired,
-      ).toList();
+      final matchingItems = _items
+          .where(
+            (item) =>
+                item.name.toLowerCase() ==
+                    ingredient.ingredientName.toLowerCase() &&
+                item.unit == ingredient.unit &&
+                !item.isExpired,
+          )
+          .toList();
 
       matchingItems.sort((a, b) {
         if (a.expiryDate == null && b.expiryDate == null) {

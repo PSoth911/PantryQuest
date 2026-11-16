@@ -1,4 +1,3 @@
-
 class CookingRecord {
   final String id;
   final String recipeId;
