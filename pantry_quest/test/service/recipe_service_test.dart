@@ -1,10 +1,9 @@
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../lib/model/recipe.dart';
-import '../../lib/model/recipeIngredient.dart';
-
-import '../../lib/service/recipe_service.dart';
+import 'package:pantry_quest/model/recipe.dart';
+import 'package:pantry_quest/model/recipeIngredient.dart';
+import 'package:pantry_quest/service/recipe_service.dart';
 
 void main() {
   group(('Recipe Service Tests'), () {
