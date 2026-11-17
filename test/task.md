@@ -79,25 +79,25 @@
 > **File**: `pantry_quest/test/service/pantry_service_test.dart`  
 > **Service**: `pantry_quest/lib/service/pantry_service.dart`
 
-- [ ] **Task 4.1: Normal Scenarios**
+- [x] **Task 4.1: Normal Scenarios**
   - [x] Add a valid pantry item (`addItem`).
   - [x] Retrieve all pantry items (`getAllItems`).
-  - [ ] Update an existing pantry item (`updateItem`).
-  - [ ] Delete an existing pantry item (`deleteItem`).
-  - [ ] Calculate available ingredient quantity (`getAvailableQuantity`).
-- [ ] **Task 4.2: Invalid Scenarios**
+  - [x] Update an existing pantry item (`updateItem`).
+  - [x] Delete an existing pantry item (`deleteItem`).
+  - [x] Calculate available ingredient quantity (`getAvailableQuantity`).
+- [x] **Task 4.2: Invalid Scenarios**
   - [x] Reject duplicate item IDs (`StateError`).
   - [x] Reject item with empty name (`ArgumentError`).
   - [x] Reject item with zero or negative quantity (`ArgumentError`).
-  - [ ] Reject updating a non-existent item (returns `false`).
-  - [ ] Reject updating with invalid quantity/data (`ArgumentError`).
-- [ ] **Task 4.3: Boundary / Special Scenarios**
+  - [x] Reject updating a non-existent item (returns `false`).
+  - [x] Reject updating with invalid quantity/data (`ArgumentError`).
+- [x] **Task 4.3: Boundary / Special Scenarios**
   - [x] Accept item expiring today but reject expired yesterday.
-  - [ ] Support null expiry dates (non-perishable items like salt or sugar).
-  - [ ] Identify items expiring within 3 days (`getAllExpiredSoon` / `isExpiringSoon`).
-  - [ ] Exclude expired ingredients from available quantities (`getAvailableQuantity`).
-  - [ ] FEFO deduction: Deduct from batches closest to expiration first (`deductIngredients`).
-  - [ ] Atomic deduction: Avoid partial deduction when any ingredient stock is insufficient.
+  - [x] Support null expiry dates (non-perishable items like salt or sugar).
+  - [x] Identify items expiring within 3 days (`getAllExpiredSoon` / `isExpiringSoon`).
+  - [x] Exclude expired ingredients from available quantities (`getAvailableQuantity`).
+  - [x] FEFO deduction: Deduct from batches closest to expiration first (`deductIngredients`).
+  - [x] Atomic deduction: Avoid partial deduction when any ingredient stock is insufficient.
 
 ---
 
