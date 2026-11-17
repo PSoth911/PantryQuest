@@ -1,195 +1,201 @@
-import 'dart:nativewrappers/_internal/vm/lib/math_patch.dart';
-
-import 'package:pantry_quest/model/ingredient_category.dart';
-import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
-
-import '../../lib/service/cooking_record_service.dart';
-import '../../lib/service/pantry_service.dart';
-
-import '../../lib/model/cookingRecord.dart';
-import '../../lib/model/pantryItem.dart';
-import '../../lib/model/recipe.dart';
-import '../../lib/model/recipeIngredient.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:pantry_quest/model/cookingRecord.dart';
+import 'package:pantry_quest/service/cooking_record_service.dart';
 
 void main() {
-  group('Cooking Record Service', () {
-    late PantryService pantryService;
-    late CookingRecordService cookingRecordService;
-    final uuid = Uuid();
+  group('CookingRecordService Tests', () {
+    late CookingRecordService service;
 
     setUp(() {
-      pantryService = PantryService();
-
-      cookingRecordService = CookingRecordService(pantryService);
+      service = CookingRecordService();
     });
 
-    test('Should record meal and deduct inventory successfull', () {
-      final today = DateTime.now();
-
-      final riceItem = PantryItem(
-        id: uuid.v4(),
-        name: "Rice",
-        quantity: 1.0,
-        unit: "kg",
-        expiryDate: today.add(const Duration(days: 10)),
-        category: IngredientCategory.grains,
+    CookingRecord createRecord({
+      String id = 'record-1',
+      String recipeId = 'recipe-101',
+      String recipeName = 'Spaghetti Bolognese',
+      DateTime? cookedAt,
+    }) {
+      return CookingRecord(
+        id: id,
+        recipeId: recipeId,
+        recipeName: recipeName,
+        cookedAt: cookedAt ?? DateTime(2026, 11, 17, 12, 0),
       );
+    }
 
-      final chickenItem = PantryItem(
-        id: uuid.v4(),
-        name: "Chicken",
-        quantity: 3.0,
-        unit: "kg",
-        expiryDate: today.add(const Duration(days: 10)),
-        category: IngredientCategory.meat,
-      );
+    group('Task 2.1: Normal Scenarios', () {
+      test('Should add a valid cooking record (addCookingRecord)', () {
+        final record = createRecord(
+          id: 'rec-1',
+          recipeId: 'recipe-1',
+          recipeName: 'Spaghetti',
+        );
 
-      pantryService.addItem(riceItem);
-      pantryService.addItem(chickenItem);
+        service.addCookingRecord(record);
 
-      final recipe = Recipe(
-        id: uuid.v4(),
-        name: 'Chicken Rice',
-        description: 'A simple meal',
-        imagePath: '',
-        ingredients: [
-          RecipeIngredient(
-            ingredientName: 'Rice',
-            requiredQuantity: 1.0,
-            unit: 'kg',
-          ),
-          RecipeIngredient(
-            ingredientName: 'Chicken',
-            requiredQuantity: 1.0,
-            unit: 'kg',
-          ),
-        ],
-      );
+        final allRecords = service.getAllCookingRecords();
+        expect(allRecords.length, equals(1));
+        expect(allRecords.first.id, equals('rec-1'));
+        expect(allRecords.first.recipeId, equals('recipe-1'));
+        expect(allRecords.first.recipeName, equals('Spaghetti'));
+        expect(allRecords.first.cookedAt, equals(record.cookedAt));
+      });
 
-      final record = cookingRecordService.recordCookedMeal(
-        recipe,
-        note: 'Chnganh',
-      );
+      test('Should retrieve all cooking records (getAllCookingRecords)', () {
+        final record1 = createRecord(id: 'rec-1', recipeName: 'Spaghetti');
+        final record2 = createRecord(id: 'rec-2', recipeName: 'Fried Rice');
 
-      expect(record, isA<CookingRecord>);
-      expect(record.recipeName, equals('Chicken Rice'));
-      expect(cookingRecordService.getAllCookingRecords().length, equals(1));
+        service.addCookingRecord(record1);
+        service.addCookingRecord(record2);
 
-      final pantry = pantryService.getAllItems();
-      expect(pantry.firstWhere((i) => i.name == 'Rice').quantity, equals(4.0));
-      expect(
-        pantry.firstWhere((i) => i.name == 'Chicken').quantity,
-        equals(2.0),
-      );
+        final records = service.getAllCookingRecords();
+        expect(records.length, equals(2));
+        expect(records[0].id, equals('rec-1'));
+        expect(records[1].id, equals('rec-2'));
+      });
+
+      test('Should retrieve a cooking record by ID (getCookingRecordById)', () {
+        final record1 = createRecord(id: 'rec-1', recipeName: 'Spaghetti');
+        final record2 = createRecord(id: 'rec-2', recipeName: 'Fried Rice');
+
+        service.addCookingRecord(record1);
+        service.addCookingRecord(record2);
+
+        final found1 = service.getCookingRecordById('rec-1');
+        expect(found1, isNotNull);
+        expect(found1!.id, equals('rec-1'));
+        expect(found1.recipeName, equals('Spaghetti'));
+
+        final found2 = service.getCookingRecordById('rec-2');
+        expect(found2, isNotNull);
+        expect(found2!.id, equals('rec-2'));
+        expect(found2.recipeName, equals('Fried Rice'));
+      });
+
+      test('Should delete a cooking record by ID (deleteCookingRecord)', () {
+        final record1 = createRecord(id: 'rec-1', recipeName: 'Spaghetti');
+        final record2 = createRecord(id: 'rec-2', recipeName: 'Fried Rice');
+
+        service.addCookingRecord(record1);
+        service.addCookingRecord(record2);
+
+        final deleted = service.deleteCookingRecord('rec-1');
+        expect(deleted, isTrue);
+
+        expect(service.getCookingRecordById('rec-1'), isNull);
+        expect(service.getAllCookingRecords().length, equals(1));
+        expect(service.getAllCookingRecords().first.id, equals('rec-2'));
+      });
     });
 
-    test('Invalid: Reject cooking and keep inventory unchange', () {
-      final today = DateTime.now();
+    group('Task 2.2: Invalid Scenarios', () {
+      test('Should reject duplicate record IDs with StateError', () {
+        final record1 = createRecord(id: 'dup-id', recipeName: 'Spaghetti');
+        final record2 = createRecord(id: 'dup-id', recipeName: 'Fried Rice');
 
-      final riceItem = PantryItem(
-        id: uuid.v4(),
-        name: "Rice",
-        quantity: 1.0,
-        unit: "kg",
-        expiryDate: today.add(const Duration(days: 10)),
-        category: IngredientCategory.grains,
-      );
+        service.addCookingRecord(record1);
 
-      pantryService.addItem(riceItem);
+        expect(
+          () => service.addCookingRecord(record2),
+          throwsA(isA<StateError>()),
+        );
 
-      final recipe = Recipe(
-        id: uuid.v4(),
-        name: 'Chicken Rice',
-        description: 'a delicous',
-        imagePath: '',
-        ingredients: [
-          RecipeIngredient(
-            ingredientName: 'Rice',
-            requiredQuantity: 1.0,
-            unit: 'kg',
-          ),
-          RecipeIngredient(
-            ingredientName: 'Chicken',
-            requiredQuantity: 1.0,
-            unit: 'kg',
-          ),
-        ],
-      );
+        expect(service.getAllCookingRecords().length, equals(1));
+        expect(service.getAllCookingRecords().first.recipeName, equals('Spaghetti'));
+      });
 
-      expect(
-        () => CookingRecordService().recordCookedMeal(recipe),
-        throwsA(isA<StateError>),
-      );
+      test('Should reject record with empty or whitespace id (ArgumentError)', () {
+        final emptyIdRecord = createRecord(id: '');
+        final whitespaceIdRecord = createRecord(id: '   ');
 
-      expect(pantryService.getAllItems().length, equals(1));
-      expect(pantryService.getAllItems().first.quantity, equals(1));
-      expect(cookingRecordService.getAllCookingRecords().isEmpty, true);
+        expect(
+          () => service.addCookingRecord(emptyIdRecord),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(
+          () => service.addCookingRecord(whitespaceIdRecord),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(service.getAllCookingRecords().isEmpty, isTrue);
+      });
+
+      test('Should reject record with empty or whitespace recipeId (ArgumentError)', () {
+        final emptyRecipeIdRecord = createRecord(recipeId: '');
+        final whitespaceRecipeIdRecord = createRecord(recipeId: '   ');
+
+        expect(
+          () => service.addCookingRecord(emptyRecipeIdRecord),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(
+          () => service.addCookingRecord(whitespaceRecipeIdRecord),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(service.getAllCookingRecords().isEmpty, isTrue);
+      });
+
+      test('Should reject record with empty or whitespace recipeName (ArgumentError)', () {
+        final emptyNameRecord = createRecord(recipeName: '');
+        final whitespaceNameRecord = createRecord(recipeName: '   ');
+
+        expect(
+          () => service.addCookingRecord(emptyNameRecord),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(
+          () => service.addCookingRecord(whitespaceNameRecord),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(service.getAllCookingRecords().isEmpty, isTrue);
+      });
     });
 
-    test('BOUNDARY: Should successfully cook and exhaust batch when quantity is exactly met', () {
-      final today = DateTime.now();
+    group('Task 2.3: Boundary / Special Scenarios', () {
+      test('Should return null when querying a non-existent ID', () {
+        expect(service.getCookingRecordById('non-existent'), isNull);
 
-      final eggsItem = PantryItem(
-        id: uuid.v4(),
-        name: 'Eggs',
-        quantity: 2.0,
-        unit: 'pcs',
-        expiryDate: today.add(const Duration(days: 3)),
-        category: IngredientCategory.dairy,
-      );
-      pantryService.addItem(eggsItem);
+        service.addCookingRecord(createRecord(id: 'rec-1'));
+        expect(service.getCookingRecordById('non-existent'), isNull);
+      });
 
-      final recipe = Recipe(
-        id: uuid.v4(),
-        name: 'Boiled Eggs',
-        description: 'Simple',
-        imagePath: '',
-        // cookingTime removed!
-        ingredients: [
-          RecipeIngredient(
-            ingredientName: 'Eggs',
-            requiredQuantity: 2.0,
-            unit: 'pcs',
-          ),
-        ],
-      );
+      test('Should return false when deleting a non-existent ID', () {
+        expect(service.deleteCookingRecord('non-existent'), isFalse);
 
-      cookingRecordService.recordCookedMeal(recipe);
+        service.addCookingRecord(createRecord(id: 'rec-1'));
+        expect(service.deleteCookingRecord('non-existent'), isFalse);
+        expect(service.getAllCookingRecords().length, equals(1));
+      });
 
-      final pantry = pantryService.getAllItems();
-      expect(pantry.first.quantity, equals(0.0));
-      expect(cookingRecordService.getAllCookingRecords().length, equals(1));
-    });
+      test('Should return an empty unmodifiable list when no records exist', () {
+        final records = service.getAllCookingRecords();
 
-    test('Invalid: Should reject adding a cooking record with empty ID or repice info', () {
-      final badRecord = CookingRecord(
-        id: '',
-        recipeId: uuid.v4(),
-        recipeName: 'Test meal',
-        cookedAt: DateTime.now(),
-      );
+        expect(records, isEmpty);
+        expect(records.length, equals(0));
 
-      expect(
-        () => cookingRecordService.addCookingRecord(badRecord),
-        throwsA(isA<ArgumentError>),
-      );
-    });
+        // Attempting to modify unmodifiable list must throw UnsupportedError
+        expect(
+          () => records.add(createRecord(id: 'bad')),
+          throwsA(isA<UnsupportedError>()),
+        );
+      });
 
-    test('Boundary: Duplicate record', () {
-      final record = CookingRecord(
-        id: 'unique-id-123',
-        recipeId: uuid.v4(),
-        recipeName: 'Pasta',
-        cookedAt: DateTime.now(),
-      );
+      test('Should return an unmodifiable list after records are added', () {
+        service.addCookingRecord(createRecord(id: 'rec-1'));
+        final records = service.getAllCookingRecords();
 
-      expect(
-        () => cookingRecordService.addCookingRecord(record),
-        throwsA(isA<StateError>),
-      );
-
-      expect(cookingRecordService.getAllCookingRecords().length, equals(1));
+        expect(records.length, equals(1));
+        expect(
+          () => records.clear(),
+          throwsA(isA<UnsupportedError>()),
+        );
+      });
     });
   });
 }

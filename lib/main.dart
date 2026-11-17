@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(
-    MaterialApp(
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       home: Scaffold(
         body: Center(
           child: Padding(
@@ -10,18 +17,15 @@ void main() {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
- 
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    padding: EdgeInsets.all(40),
-                  
+                    padding: const EdgeInsets.all(40),
                     decoration: BoxDecoration(
                       color: Colors.blue[100],
                       borderRadius: BorderRadius.circular(30),
                     ),
-                  
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "OOP",
                         style: TextStyle(
@@ -33,21 +37,15 @@ void main() {
                     ),
                   ),
                 ),
-             
-             
-             
-            
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    padding: EdgeInsets.all(40),
-            
+                    padding: const EdgeInsets.all(40),
                     decoration: BoxDecoration(
                       color: Colors.blue[900],
                       borderRadius: BorderRadius.circular(30),
                     ),
-            
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "JAVA",
                         style: TextStyle(
@@ -59,21 +57,15 @@ void main() {
                     ),
                   ),
                 ),
-             
-            
-             
-            
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    padding: EdgeInsets.all(40),
-            
+                    padding: const EdgeInsets.all(40),
                     decoration: BoxDecoration(
                       color: Colors.blue[400],
                       borderRadius: BorderRadius.circular(30),
                     ),
-            
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "FLUTTER",
                         style: TextStyle(
@@ -85,17 +77,12 @@ void main() {
                     ),
                   ),
                 ),
-             
-             
-             
-            
-             
-             
               ],
             ),
-          )
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
+

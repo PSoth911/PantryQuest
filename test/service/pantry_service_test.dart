@@ -2,8 +2,8 @@ import 'package:pantry_quest/model/ingredient_category.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../lib/model/pantryItem.dart';
-import '../../lib/service/pantry_service.dart';
+import 'package:pantry_quest/model/pantryItem.dart';
+import 'package:pantry_quest/service/pantry_service.dart';
 
 void main() {
   group('PantryService Tests', () {
