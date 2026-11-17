@@ -8,5 +8,3 @@ enum IngredientCategory {
   spices,
   other,
 }
-
-
