@@ -9,13 +9,13 @@
 
 ## 📋 Epic Acceptance Criteria
 
-- [ ] **Coverage Quality**: Normal, invalid, and boundary/special scenarios are covered for all services.
-- [ ] **Test Count**: At least 5 test cases exist for each service, covering both successful and unsuccessful operations.
-- [ ] **Data Integrity**: Business rules and data integrity are properly verified.
-- [ ] **Zero Logic Degradation**: Failing tests are fixed without altering production business logic merely to pass.
-- [ ] **Independence**: All tests are self-contained, independent, and repeatable.
-- [ ] **Green Test Suite**: `flutter test` passes 100% cleanly across all test files.
-- [ ] **Documentation**: Execution results documented for closing issues #51–#56.
+- [x] **Coverage Quality**: Normal, invalid, and boundary/special scenarios are covered for all services.
+- [x] **Test Count**: At least 5 test cases exist for each service, covering both successful and unsuccessful operations.
+- [x] **Data Integrity**: Business rules and data integrity are properly verified.
+- [x] **Zero Logic Degradation**: Failing tests are fixed without altering production business logic merely to pass.
+- [x] **Independence**: All tests are self-contained, independent, and repeatable.
+- [x] **Green Test Suite**: `flutter test` passes 100% cleanly across all test files.
+- [x] **Documentation**: Execution results documented for closing issues #51–#56.
 
 ---
 
@@ -106,36 +106,36 @@
 > **File**: `pantry_quest/test/service/recipe_service_test.dart`  
 > **Service**: `pantry_quest/lib/service/recipe_service.dart`
 
-- [ ] **Task 5.1: Normal Scenarios**
+- [x] **Task 5.1: Normal Scenarios**
   - [x] Add a valid recipe (`addRecipe`).
   - [x] Retrieve all recipes (`getAllRecipes`).
-  - [ ] Retrieve recipe by ID (`getRecipeById`).
-  - [ ] Update an existing recipe (`updateRecipe`).
-  - [ ] Delete an existing recipe (`deleteRecipe`).
-  - [ ] Identify a recipe that can be prepared (`isRecipeAvailable`).
-  - [ ] Calculate missing ingredients (`getMissingIngredients`).
-- [ ] **Task 5.2: Invalid Scenarios**
+  - [x] Retrieve recipe by ID (`getRecipeById`).
+  - [x] Update an existing recipe (`updateRecipe`).
+  - [x] Delete an existing recipe (`deleteRecipe`).
+  - [x] Identify a recipe that can be prepared (`isRecipeAvailable`).
+  - [x] Calculate missing ingredients (`getMissingIngredients`).
+- [x] **Task 5.2: Invalid Scenarios**
   - [x] Reject recipe with empty name (`ArgumentError`).
   - [x] Reject recipe with duplicate ID (`StateError`).
   - [x] Reject recipe with ingredient quantity <= 0 (`ArgumentError`).
-  - [ ] Reject recipe with empty ingredients list (`ArgumentError`).
-  - [ ] Reject updating a non-existent recipe (returns `false`).
-- [ ] **Task 5.3: Boundary / Special Scenarios**
-  - [ ] Aggregate duplicate ingredient lines in a single recipe (`_aggregateIngredients`).
-  - [ ] Handle empty pantry (all ingredients reported as missing).
-  - [ ] Exact quantity availability (pantry has exactly what recipe needs).
-  - [ ] Case-insensitive matching of ingredient names.
+  - [x] Reject recipe with empty ingredients list (`ArgumentError`).
+  - [x] Reject updating a non-existent recipe (returns `false`).
+- [x] **Task 5.3: Boundary / Special Scenarios**
+  - [x] Aggregate duplicate ingredient lines in a single recipe (`_aggregateIngredients`).
+  - [x] Handle empty pantry (all ingredients reported as missing).
+  - [x] Exact quantity availability (pantry has exactly what recipe needs).
+  - [x] Case-insensitive matching of ingredient names.
 
 ---
 
 ## 🔍 Phase 6: Suite Validation & Documentation
 > **GitHub Issue**: [#56 Review Test Coverage and Validate the Test Layer](https://github.com/PSoth911/PantryQuest/issues/56)
 
-- [ ] **Task 6.1: Run Full Test Suite**
+- [x] **Task 6.1: Run Full Test Suite**
   - Execute `flutter test` across all unit tests and verify 0 failures.
-- [ ] **Task 6.2: Verify Scenario Coverage**
+- [x] **Task 6.2: Verify Scenario Coverage**
   - Confirm every service has at least 5 test cases covering Normal, Invalid, and Boundary scenarios.
-- [ ] **Task 6.3: Confirm Test Independence**
+- [x] **Task 6.3: Confirm Test Independence**
   - Verify tests do not rely on execution order or shared mutable global state.
-- [ ] **Task 6.4: Document Execution Results**
+- [x] **Task 6.4: Document Execution Results**
   - Compile output summary to close GitHub issues #51 through #56.
